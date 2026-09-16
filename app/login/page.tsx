@@ -13,28 +13,30 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    setError("");
-    setLoading(true);
+  setError("");
+  setLoading(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+  const result = await signIn("credentials", {
+    email,
+    password,
+    redirect: false,
+  });
 
-    setLoading(false);
+  setLoading(false);
 
-    if (result?.error) {
-      setError("Invalid email or password.");
-      return;
-    }
+  if (result?.error) {
+    setError("Invalid email or password.");
+    return;
+  }
 
-    router.push("/dashboard");
-    router.refresh();
-  };
+  const params = new URLSearchParams(window.location.search);
+  const callbackUrl = params.get("callbackUrl");
 
+  router.push(callbackUrl || "/");
+  router.refresh();
+};
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">

@@ -1,8 +1,18 @@
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // GET all videos
 export async function GET() {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { error: "Authentication required." },
+      { status: 401 }
+    );
+  }
+
   try {
     const videos = await prisma.video.findMany({
       include: {

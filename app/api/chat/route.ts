@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
@@ -11,6 +12,15 @@ type ChatMessage = {
 };
 
 export async function POST(request: Request) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { error: "Authentication required." },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
 

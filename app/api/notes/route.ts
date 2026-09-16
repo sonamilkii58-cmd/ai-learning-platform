@@ -1,7 +1,17 @@
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
+  const session = await auth();
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { error: "Authentication required." },
+      { status: 401 }
+    );
+  }
+
   try {
     const notes = await prisma.note.findMany({
       include: {
