@@ -52,3 +52,8 @@ export type Chat = Prisma.ChatModel
  * 
  */
 export type ChatMessage = Prisma.ChatMessageModel
+/**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel

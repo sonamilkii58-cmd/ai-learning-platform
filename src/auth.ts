@@ -25,7 +25,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const email = String(credentials.email);
+        const email = String(credentials.email)
+          .trim()
+          .toLowerCase();
+
         const password = String(credentials.password);
 
         const user = await prisma.user.findUnique({
@@ -66,7 +69,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: "STUDENT" | "ADMIN" }).role;
+
+        token.role = (
+          user as {
+            role?: "STUDENT" | "ADMIN";
+          }
+        ).role;
       }
 
       return token;
@@ -75,8 +83,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        (session.user as typeof session.user & { role: "STUDENT" | "ADMIN" }).role =
-          token.role as "STUDENT" | "ADMIN";
+
+        (
+          session.user as typeof session.user & {
+            role: "STUDENT" | "ADMIN";
+          }
+        ).role = token.role as "STUDENT" | "ADMIN";
       }
 
       return session;

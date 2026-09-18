@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,96 +14,136 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setError("");
-  setLoading(true);
+    setError("");
+    setLoading(true);
 
-  const result = await signIn("credentials", {
-    email,
-    password,
-    redirect: false,
-  });
+    const result = await signIn("credentials", {
+      email: email.trim().toLowerCase(),
+      password,
+      redirect: false,
+    });
 
-  setLoading(false);
+    setLoading(false);
 
-  if (result?.error) {
-    setError("Invalid email or password.");
-    return;
-  }
+    if (result?.error) {
+      setError("Invalid email or password.");
+      return;
+    }
 
-  const params = new URLSearchParams(window.location.search);
-  const callbackUrl = params.get("callbackUrl");
+    const params = new URLSearchParams(window.location.search);
+    const callbackUrl = params.get("callbackUrl");
 
-  router.push(callbackUrl || "/");
-  router.refresh();
-};
+    router.push(callbackUrl || "/");
+    router.refresh();
+  };
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-2">
+    <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+
+        {/* Heading */}
+        <h1 className="mb-2 text-center text-3xl font-bold text-gray-900">
           Welcome Back
         </h1>
 
-        <p className="text-gray-500 text-center mb-8">
+        <p className="mb-8 text-center text-gray-600">
           Login to your LearnHub account
         </p>
 
+        {/* Error */}
         {error && (
-          <div className="mb-4 rounded-lg bg-red-100 text-red-700 px-4 py-3">
+          <div className="mb-4 rounded-lg bg-red-100 px-4 py-3 text-red-700">
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-5">
+
+          {/* Email */}
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-semibold text-gray-900"
+            >
               Email
             </label>
 
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="email"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-semibold text-gray-900"
+            >
               Password
             </label>
 
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="current-password"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500"
             />
+
+            {/* Forgot Password */}
+            <div className="mt-2 text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-semibold text-blue-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
+          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Don't have an account?{" "}
-          <a
+        {/* Register */}
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don&apos;t have an account?{" "}
+          <Link
             href="/register"
             className="font-semibold text-blue-600 hover:underline"
           >
             Register
-          </a>
+          </Link>
         </p>
+
+        {/* Home */}
+        <div className="mt-6 text-center">
+          <Link
+            href="/"
+            className="text-sm font-semibold text-gray-600 hover:text-blue-600"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
       </div>
     </main>
   );
